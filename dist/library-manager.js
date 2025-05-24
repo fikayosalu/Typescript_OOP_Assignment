@@ -1,53 +1,59 @@
 "use strict";
 class Library {
-    constructor(name) {
-        this.name = name;
+    constructor() {
+        this.books = [];
+        this.members = [];
     }
-    addToArchive(book) {
-        Library.books.push(book);
-        console.log(`${book} has been added to the Library`);
-    }
-    get allBooks() {
-        return Library.books;
+    addBook(book) {
+        this.books.push(book);
+        console.log(`"${book.name}" was successfully added`);
     }
 }
-Library.books = [];
-Library.totalBooks = Library.books.length;
-class User extends Library {
-    constructor(name, age, favoriteGenre, id) {
-        super(name);
-        this.age = age;
-        this.id = id !== undefined ? id : ++User.id;
-        this.favoriteGenre = favoriteGenre !== undefined ? favoriteGenre : null;
-        console.log(`Welcome to the library ${this.name} we have for to read. All we ask is that you please be quiet`);
+class Book {
+    constructor(name, num) {
+        this.name = name;
+        this.noInStock = num;
     }
-    lendBook(book) {
-        if (Library.books.includes(book)) {
-            Library.books = Library.books.filter((item) => {
-                return item !== book;
-            });
-            console.log(`${this.name} borrowed ${book}, to be returned next week`);
-        }
-        else {
-            console.log(`We currently don't have "${book}" please check back later`);
+}
+class Member {
+    constructor(name, genre) {
+        this.borrowedBooks = [];
+        this.name = name;
+        this.favoriteGenre = genre;
+    }
+    borrowBook(book) {
+        if (!this.borrowedBooks.includes(book)) {
+            if (book.noInStock > 0) {
+                this.borrowedBooks.push(book);
+                book.noInStock--;
+            }
+            console.log(`${book.name} borrowed by ${this.name}`);
         }
     }
     returnBook(book) {
-        Library.books.push(book);
-        console.log(`Thank you ${this.name} for returning "${book}"`);
+        if (this.borrowedBooks.includes(book)) {
+            this.borrowedBooks = this.borrowedBooks.filter((item) => {
+                return item !== book;
+            });
+            book.noInStock++;
+        }
+        else {
+            console.log(`${this.name} my nigga you don't even have the book`);
+        }
     }
 }
-User.id = 0;
-const lib1 = new Library("Memorial Library");
-const user1 = new User("Toby", 25);
-const user3 = new User("Daniel", 25);
-const user4 = new User("David", 25);
-console.log(user1, user3, user4);
-user1.returnBook("Native Son");
-let books = lib1.allBooks;
-console.log(books);
-user1.lendBook("Half of A Yellow Sun");
-lib1.addToArchive("Half of A Yellow Sun");
-console.log(lib1.allBooks);
-user1.lendBook("Half of A Yellow Sun");
-console.log(lib1.allBooks);
+const book1 = new Book("Native Son", 25);
+const lib = new Library();
+lib.addBook(book1);
+const user = new Member("Dayo");
+const user32 = new Member("Ade");
+const user24 = new Member("Tolu");
+user.borrowBook(book1);
+console.log(user.borrowedBooks);
+user32.borrowBook(book1);
+console.log(user32.borrowedBooks);
+console.log(lib.books);
+user32.returnBook(book1);
+console.log(user32.borrowedBooks);
+user24.returnBook(book1);
+console.log(user24.borrowedBooks);
